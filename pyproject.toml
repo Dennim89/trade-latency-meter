@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trade-latency-meter"
+version = "0.1.0"
+description = "Stage stopwatch for trading-bot hot paths, plus offline transaction-signing benchmarks. Sends nothing to a network."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Denys" }]
+# The core library and the report/demo commands use the standard library only.
+dependencies = []
+
+[project.optional-dependencies]
+# `tlm bench solana`: solders builds and signs v0 transactions (Rust bindings, same wire format as the chain).
+solana = ["solders>=0.18"]
+# `tlm bench evm`: rlp encodes, eth-hash computes Keccak-256, eth-keys signs (secp256k1).
+evm = ["rlp>=3.0", "eth-keys>=0.4", "eth-hash[pycryptodome]>=0.5"]
+# Optional C backend for secp256k1; eth-keys picks it up automatically.
+evm-fast = ["rlp>=3.0", "eth-keys>=0.4", "eth-hash[pycryptodome]>=0.5", "coincurve>=18"]
+# Tests cross-check the EVM bench against eth-account.
+test = ["pytest>=7", "solders>=0.18", "rlp>=3.0", "eth-keys>=0.4", "eth-hash[pycryptodome]>=0.5", "eth-account>=0.10"]
+
+[project.scripts]
+tlm = "trade_latency_meter.cli:main"
+
+[tool.setuptools]
+packages = ["trade_latency_meter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
